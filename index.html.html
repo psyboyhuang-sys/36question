@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈森林冒險 - 36個交換真心的問題</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FFF9F0; /* 奶油色背景 */
+            color: #5D4037;
+            overflow-x: hidden;
+        }
+
+        .forest-bg {
+            background: linear-gradient(180deg, #E8F5E9 0%, #FFF9F0 100%);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(121, 85, 72, 0.1);
+            border: 4px solid #BCAAA4;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #FF8A65;
+            color: white;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #FF7043;
+            transform: scale(1.05);
+        }
+
+        .progress-fox {
+            transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bubble {
+            position: relative;
+            background: #D7CCC8;
+            border-radius: 15px;
+            padding: 10px 15px;
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: #D7CCC8;
+            border-bottom: 0;
+            margin-left: -10px;
+            margin-bottom: -10px;
+        }
+
+        /* 隱藏原生卷軸 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF9F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #BCAAA4;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="forest-bg min-h-screen flex flex-col items-center p-4">
+
+    <!-- 頂部進度條與小狐狸 -->
+    <div id="nav-container" class="w-full max-w-2xl mt-8 mb-4 hidden">
+        <div class="relative h-4 bg-stone-200 rounded-full overflow-visible">
+            <div id="progress-bar" class="h-full bg-orange-300 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <div id="fox-pointer" class="progress-fox absolute top-[-30px] text-2xl" style="left: 0%">🦊</div>
+        </div>
+        <div class="flex justify-between mt-2 text-sm font-medium text-stone-500">
+            <span>晨曦草原</span>
+            <span>回憶森林</span>
+            <span>真心湖畔</span>
+        </div>
+    </div>
+
+    <!-- 主遊戲區 -->
+    <main id="game-area" class="w-full max-w-2xl flex-grow flex flex-col items-center justify-center">
+        
+        <!-- 歡迎畫面 -->
+        <div id="start-screen" class="text-center fade-in">
+            <div class="text-6xl mb-6">⛺</div>
+            <h1 class="text-4xl font-bold mb-4 text-orange-800">心靈森林冒險</h1>
+            <p class="text-lg mb-8 leading-relaxed">
+                嘿！準備好要交換一點真心了嗎？<br>
+                這是一場關於「發現」的旅行。<br>
+                我們準備了 36 塊魔法拼圖，邀你和眼前的他，<br>
+                一人一片，拼出最真實的樣子。
+            </p>
+            <div class="space-y-4">
+                <button onclick="startGame()" class="btn-primary px-8 py-4 rounded-full text-xl font-bold shadow-lg">
+                    點擊營火，開始冒險
+                </button>
+            </div>
+        </div>
+
+        <!-- 問題顯示卡片 -->
+        <div id="question-screen" class="hidden w-full fade-in">
+            <div class="text-center mb-4">
+                <span id="phase-tag" class="px-4 py-1 rounded-full text-sm font-bold bg-green-100 text-green-700">階段 1</span>
+                <span id="question-number" class="ml-2 text-stone-400 font-mono">1/36</span>
+            </div>
+            
+            <div class="card p-8 md:p-12 mb-8 relative overflow-hidden">
+                <!-- 裝飾背景 -->
+                <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none">🌿</div>
+                
+                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-center leading-snug mb-8 min-h-[100px] flex items-center justify-center">
+                    如果你可以邀請任何人共進晚餐，你會選誰？
+                </h2>
+
+                <!-- 提示泡泡 -->
+                <div id="hint-area" class="bg-orange-50 border-l-4 border-orange-300 p-4 rounded-r-lg mb-8 transition-all">
+                    <p class="text-sm font-bold text-orange-700 mb-1">💡 小精靈的悄悄話：</p>
+                    <p id="hint-text" class="text-stone-600 text-sm">
+                        不用擔心時空限制，哪怕是已經不在的人或虛擬角色也可以喔！聊聊為什麼他吸引你？
+                    </p>
+                </div>
+
+                <div class="flex justify-between items-center mt-10">
+                    <button onclick="prevQuestion()" id="prev-btn" class="text-stone-400 hover:text-stone-600 font-medium">
+                        ← 回到上一個
+                    </button>
+                    <button onclick="nextQuestion()" class="btn-primary px-10 py-3 rounded-full font-bold shadow-md">
+                        下一塊拼圖 →
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center text-sm text-stone-400">
+                記得：真誠的回答，安靜的傾聽。
+            </div>
+        </div>
+
+        <!-- 對視畫面 -->
+        <div id="stare-screen" class="hidden text-center fade-in">
+            <div class="text-6xl mb-6">✨</div>
+            <h2 class="text-3xl font-bold mb-4">最後的儀式：凝視</h2>
+            <p class="mb-8 text-stone-600 italic">
+                現在，請放下手機，靜靜地注視對方的眼睛。<br>
+                不用說話，感受這 45 分鐘建立起的連結。
+            </p>
+            <div id="timer" class="text-6xl font-mono font-bold text-orange-600 mb-8">04:00</div>
+            <button id="start-timer-btn" onclick="startTimer()" class="btn-primary px-8 py-3 rounded-full font-bold">
+                開始 4 分鐘對視
+            </button>
+        </div>
+
+    </main>
+
+    <!-- 腳步裝飾 -->
+    <div class="fixed bottom-0 left-0 p-4 pointer-events-none opacity-20 hidden md:block">
+        <span class="text-4xl">🌲🌲</span>
+    </div>
+    <div class="fixed bottom-0 right-0 p-4 pointer-events-none opacity-20 hidden md:block">
+        <span class="text-4xl">🌳🌳</span>
+    </div>
+
+    <script>
+        const questions = [
+            // 第一組
+            { q: "如果可以選，你最想邀誰共進晚餐？", h: "不用考慮預算或時空，想一想哪個人的靈魂最讓你好奇？", p: 1 },
+            { q: "你想出名嗎？以什麼樣的方式出名？", h: "是像大明星、科學家，還是社區裡最有名的廚師？", p: 1 },
+            { q: "打電話前，你會先練習要說什麼嗎？為什麼？", h: "是因為怕尷尬，還是希望能把心意表達得更完美呢？", p: 1 },
+            { q: "對你來說，「完美的一天」必須包含什麼？", h: "是燦爛的陽光，還是一本讀不完的好書？試著描述那個畫面。", p: 1 },
+            { q: "你上一次對著自己唱歌是什麼時候？對著別人呢？", h: "唱歌是心情的出口，當時你的心跳是什麼節奏？", p: 1 },
+            { q: "如果你能活到 90 歲，且能讓身體或心智在最後 60 年保持在 30 歲，你會選哪一個？", h: "你更依賴你的體能，還是你思考世界的方式？", p: 1 },
+            { q: "你是否有預感自己會怎麼死？", h: "這是一個神祕的直覺，不用害怕，這反映了你對生命的理解。", p: 1 },
+            { q: "說出三個你與對方的共同點。", h: "仔細觀察眼前的夥伴，也許是同樣的笑點，或是一樣的坐姿。", p: 1 },
+            { q: "生活中什麼事讓你心懷感激？", h: "哪怕是早上的那杯咖啡，或是一個溫暖的問候。", p: 1 },
+            { q: "如果你能改變成長過程中的任何一件事，會是什麼？", h: "如果那塊積木換了位置，現在的你會變成什麼樣子？", p: 1 },
+            { q: "用 4 分鐘儘可能詳細地向對方講述你的生命故事。", h: "這是你的個人電影簡介，試著把最重要的幾幕演繹出來。", p: 1 },
+            { q: "如果明早醒來你能獲得一種超能力，你希望是什麼？", h: "這反映了你內心最渴望解決的麻煩，或是最嚮往的自由。", p: 1 },
+            
+            // 第二組
+            { q: "如果有一顆水晶球能告訴你關於你自己、未來或任何事的真相，你想知道嗎？", h: "如果你知道結局，你會更專注於當下，還是感到壓力？", p: 2 },
+            { q: "有什麼事是你夢寐以求想做卻還沒做的？為什麼沒做？", h: "那顆種子還在心底嗎？是什麼阻礙了它發芽？", p: 2 },
+            { q: "你這輩子最大的成就是什麼？", h: "不一定是獎狀，也可以是「學會愛人」或「熬過某個難關」。", p: 2 },
+            { q: "在友誼中，你最看重的是什麼？", h: "是百分之百的誠實，還是能在深夜隨時打出的那通電話？", p: 2 },
+            { q: "你最珍貴的一段回憶是什麼？", h: "閉上眼，那個畫面是什麼顏色？聞起來是什麼味道？", p: 2 },
+            { q: "你最糟糕的一段回憶是什麼？", h: "這是一個樹洞，分享出來，森林會幫你一起承擔。", p: 2 },
+            { q: "如果你已知自己在一年內會死去，你會改變現在的生活方式嗎？為什麼？", h: "你會把時間留給誰？去做哪件一直被延後的事？", p: 2 },
+            { q: "「友誼」對你而言意味著什麼？", h: "是一起瘋狂的夥伴，還是彼此支持的支柱？", p: 2 },
+            { q: "愛與情感在你的生活中扮演什麼角色？", h: "它像是空氣、陽光，還是偶爾出現的雨水？", p: 2 },
+            { q: "輪流分享對方的優點（每人分享 5 個）。", h: "現在是讚美時間！大聲說出你剛才發現的他有多棒。", p: 2 },
+            { q: "你的家庭關係親近嗎？你覺得自己的童年比別人快樂嗎？", h: "家是我們生長的第一片土壤，它讓你長成了什麼樣的樹？", p: 2 },
+            { q: "你覺得自己與母親的關係如何？", h: "這是一段深刻的連結，試著用一個詞來形容這份關係。", p: 2 },
+            
+            // 第三組
+            { q: "輪流說出三個以「我們」開頭的句子。", h: "例如：「我們現在都坐在這裏感覺到一點點害羞...」", p: 3 },
+            { q: "完成這句話：「我希望有一個人能與我分享...」", h: "這是一封寄給未來的信，你最想把什麼遞給另一個人？", p: 3 },
+            { q: "如果你要和對方成為親密好友，請分享一件他必須知道的事。", h: "像是開啟你心靈門鎖的一把鑰匙，告訴他關鍵在哪裡。", p: 3 },
+            { q: "告訴對方你喜歡他什麼；請誠實地說出那些你可能不會對初次見面的人說的話。", h: "現在我們已經是老朋友了，把那句讚美勇敢說出來。", p: 3 },
+            { q: "分享你生命中一個尷尬的時刻。", h: "把糗事說出來，兩個人一起笑一笑，距離就消失了。", p: 3 },
+            { q: "你上次在別人面前哭是什麼時候？獨自流淚呢？", h: "眼淚是情緒的洗禮，當時是什麼觸動了你最軟的地方？", p: 3 },
+            { q: "告訴對方，你已經喜歡上他的哪些特質。", h: "這 30 題下來，他身上的哪個亮點讓你覺得很迷人？", p: 3 },
+            { q: "有什麼事是不能拿來開玩笑的（如果有的話）？", h: "每個人都有神聖不可侵犯的小花園，你的在哪裡？", p: 3 },
+            { q: "如果你今晚就會死去，你最遺憾沒跟誰說什麼？為什麼還沒說？", h: "這是一個提醒，也許冒險結束後，你可以立刻發出那條訊息。", p: 3 },
+            { q: "如果家裡著火，救出親友寵物後，你還能衝進去救一樣東西，會是什麼？", h: "這件東西代表了你靈魂中某個不可取代的記憶。", p: 3 },
+            { q: "在家族所有人中，誰的死會最讓你困擾？為什麼？", h: "這反映了你心底最深的安全感來源，誠實面對這種脆弱。", p: 3 },
+            { q: "分享一個個人問題，並向對方請教他的處理方式。", h: "讓對方進到你的生活中，看看他會如何為你修剪枝葉。", p: 3 }
+        ];
+
+        let currentIndex = 0;
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('nav-container').classList.remove('hidden');
+            document.getElementById('question-screen').classList.remove('hidden');
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const q = questions[currentIndex];
+            const qText = document.getElementById('question-text');
+            const hText = document.getElementById('hint-text');
+            const pTag = document.getElementById('phase-tag');
+            const qNum = document.getElementById('question-number');
+            const pBar = document.getElementById('progress-bar');
+            const fox = document.getElementById('fox-pointer');
+
+            // 更新文字
+            qText.innerText = q.q;
+            hText.innerText = q.h;
+            qNum.innerText = `${currentIndex + 1}/36`;
+
+            // 更新階段
+            const phases = ["晨曦草原", "回憶森林", "真心湖畔"];
+            pTag.innerText = `階段 ${q.p}：${phases[q.p-1]}`;
+            pTag.className = `px-4 py-1 rounded-full text-sm font-bold ` + 
+                             (q.p === 1 ? 'bg-green-100 text-green-700' : 
+                              q.p === 2 ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700');
+
+            // 更新進度條
+            const progress = ((currentIndex + 1) / 36) * 100;
+            pBar.style.width = `${progress}%`;
+            fox.style.left = `calc(${progress}% - 20px)`;
+
+            // 按鈕控制
+            document.getElementById('prev-btn').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+            
+            // 加入淡入效果
+            const card = document.querySelector('.card');
+            card.classList.remove('fade-in');
+            void card.offsetWidth; // 重新觸發動畫
+            card.classList.add('fade-in');
+        }
+
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                updateDisplay();
+            } else {
+                showStareScreen();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateDisplay();
+            }
+        }
+
+        function showStareScreen() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('stare-screen').classList.remove('hidden');
+            document.getElementById('nav-container').classList.add('opacity-50');
+        }
+
+        // 計時器邏輯
+        let timerInterval;
+        function startTimer() {
+            let timeLeft = 240; // 4分鐘
+            const display = document.getElementById('timer');
+            const btn = document.getElementById('start-timer-btn');
+            
+            btn.disabled = true;
+            btn.innerText = "儀式進行中...";
+            btn.classList.replace('btn-primary', 'bg-stone-300');
+
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                display.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    display.innerText = "✨";
+                    alert("冒險完成。謝謝你們的勇氣，祝你們擁有美好的一天。");
+                    location.reload();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
